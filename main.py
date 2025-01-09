@@ -47,30 +47,30 @@ def compute_secret_hash(user_id, client_id, client_secret):
     return base64.b64encode(digest).decode()
 
 
-@app.on_event("startup")
-async def setup_user_pool_client():
-    try:
-        # Fetch existing client details
-        response = cognito_client.describe_user_pool_client(
-            UserPoolId=USER_POOL_ID, ClientId=CLIENT_ID
-        )
-        client = response["UserPoolClient"]
-        print("Existing User Pool Client details:", client)
+# @app.on_event("startup")
+# async def setup_user_pool_client():
+#     try:
+#         # Fetch existing client details
+#         response = cognito_client.describe_user_pool_client(
+#             UserPoolId=USER_POOL_ID, ClientId=CLIENT_ID
+#         )
+#         client = response["UserPoolClient"]
+#         print("Existing User Pool Client details:", client)
 
-        # Check if the client needs updating
-        updated_client = cognito_client.update_user_pool_client(
-            UserPoolId=USER_POOL_ID,
-            ClientId=CLIENT_ID,
-            AllowedOAuthFlowsUserPoolClient=True,
-            AllowedOAuthScopes=SCOPE,
-            AllowedOAuthFlows=["code"],
-            SupportedIdentityProviders=["COGNITO"],
-            CallbackURLs=["http://localhost:8000/cognito/callback"],
-            LogoutURLs=["http://localhost:8000/logout"],  # Optional logout URL
-        )
-        print("User Pool Client updated successfully:", updated_client)
-    except ClientError as e:
-        print("Failed to retrieve or update User Pool Client:", e)
+#         # Check if the client needs updating
+#         updated_client = cognito_client.update_user_pool_client(
+#             UserPoolId=USER_POOL_ID,
+#             ClientId=CLIENT_ID,
+#             AllowedOAuthFlowsUserPoolClient=True,
+#             AllowedOAuthScopes=SCOPE,
+#             AllowedOAuthFlows=["code"],
+#             SupportedIdentityProviders=["COGNITO"],
+#             CallbackURLs=["http://localhost:8000/cognito/callback"],
+#             LogoutURLs=["http://localhost:8000/logout"],  # Optional logout URL
+#         )
+#         print("User Pool Client updated successfully:", updated_client)
+#     except ClientError as e:
+#         print("Failed to retrieve or update User Pool Client:", e)
 
 
 @app.get("/", response_class=HTMLResponse)
