@@ -23,7 +23,7 @@ CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
 USER_POOL_ID = os.environ.get("USER_POOL_ID")
 REGION = os.environ.get("AWS_REGION")
 SCOPE = os.environ.get("SCOPE").split(",")
-print("SCOPE", SCOPE, type(SCOPE))
+# print("SCOPE", SCOPE, type(SCOPE))
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key="secret")
@@ -76,7 +76,7 @@ def compute_secret_hash(user_id, client_id, client_secret):
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     user = request.session.get("user")
-    print(user)
+    # print(user)
     if user:
         return f'Hello, {user["attributes"]["given_name"]}. <a href="/logout">Logout</a>'
     else:
@@ -89,7 +89,7 @@ async def login():
     redirect_uri = quote_plus("http://localhost:8000/cognito/callback")
     scopes = "+".join(SCOPE)
     login_url = f"https://eu-west-2p52dmw0az.auth.{REGION}.amazoncognito.com/login?client_id={CLIENT_ID}&response_type=code&scope={scopes}&redirect_uri={redirect_uri}"
-    print("LOGIN URL", login_url)
+    # print("LOGIN URL", login_url)
     return RedirectResponse(url=login_url)
 
 
