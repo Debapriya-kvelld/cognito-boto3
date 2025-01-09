@@ -22,6 +22,8 @@ CLIENT_ID = os.environ.get("CLIENT_ID")
 CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
 USER_POOL_ID = os.environ.get("USER_POOL_ID")
 REGION = os.environ.get("AWS_REGION")
+SCOPE = os.environ.get("SCOPE").split(",")
+print("SCOPE", SCOPE, type(SCOPE))
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key="secret")
@@ -60,7 +62,7 @@ async def setup_user_pool_client():
             UserPoolId=USER_POOL_ID,
             ClientId=CLIENT_ID,
             AllowedOAuthFlowsUserPoolClient=True,
-            AllowedOAuthScopes=["email", "profile", "openid", "aws.cognito.signin.user.admin"],
+            AllowedOAuthScopes=SCOPE,
             AllowedOAuthFlows=["code"],
             SupportedIdentityProviders=["COGNITO"],
             CallbackURLs=["http://localhost:8000/cognito/callback"],
@@ -85,8 +87,8 @@ async def index(request: Request):
 async def login():
     # Generate the login URL
     redirect_uri = quote_plus("http://localhost:8000/cognito/callback")
-    login_url = f"https://eu-west-2p52dmw0az.auth.{REGION}.amazoncognito.com/login?client_id={CLIENT_ID}&response_type=code&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri={redirect_uri}"
-    login_url = f"https://eu-west-2p52dmw0az.auth.{REGION}.amazoncognito.com/login?client_id={CLIENT_ID}&response_type=code&scope=aws.cognito.signin.user.admin+email+openid+profile&redirect_uri={redirect_uri}"
+    scopes = "+".join(SCOPE)
+    login_url = f"https://eu-west-2p52dmw0az.auth.{REGION}.amazoncognito.com/login?client_id={CLIENT_ID}&response_type=code&scope={scopes}&redirect_uri={redirect_uri}"
     print("LOGIN URL", login_url)
     return RedirectResponse(url=login_url)
 
